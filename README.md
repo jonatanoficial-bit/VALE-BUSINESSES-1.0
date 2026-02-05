@@ -1,26 +1,38 @@
-# Empresarial (MVP) — Gestão Premium para PMEs (Vanilla)
+# Chamara Vale Businesses 1.0 — Core v0.3.0 (Etapa 3: Content Studio + DLC Builder)
 
-Mobile-first em HTML/CSS/JS puro, com arquitetura de conteúdo (Core + DLC) e Admin local.
+Aplicação **mobile-first** em **HTML + CSS + JavaScript puro**, com UI/UX premium, arquitetura **Core + DLC**, Admin local, **RBAC** e agora um **Content Studio** para editar conteúdo sem backend.
 
-## Rodar
-Use servidor local (não `file://`):
+## Rodar localmente
+> Não abra via `file://` (usa `fetch()` do manifest). Use um servidor.
 
 ```bash
-cd empresarial_mvp
+cd chamara_vale_businesses_v030
 python -m http.server 5500
 ```
 
-Acesse: http://localhost:5500
+## Logins (MVP local)
+- Senha padrão demo: `1234`
+- Admin mode: `admin` (na área Admin)
 
-## Logins demo
-- admin@empresa.com / 1234
-- fin@empresa.com / 1234
-- rh@empresa.com / 1234
-- pm@empresa.com / 1234
+## Etapa 3 (novidades)
+### 1) Content Studio (Admin)
+- Edita **label, hint, descrição, tags e order** de setores
+- Edita **tutorial** (resumo + passos)
+- Salva como **override** em `localStorage`
+- Export/Import via **backup** (schema v3)
 
-## Admin
-Abra `#/admin` — senha admin (MVP): `admin`
+### 2) DLC Builder (local)
+- Cria DLCs **locais** (manifest JSON + módulo placeholder)
+- Você salva, ativa na lista de DLCs e **recarrega**
+- Exporta manifest para versionar/compartilhar
 
-## DLC
-- Core: content/core/manifest.json (campo dlcIndex)
-- DLCs: content/dlc/<pasta>/manifest.json
+## Backup (schema v3)
+Export inclui:
+- dados (finance/hr/projects)
+- usuários (RBAC)
+- DLCs habilitadas
+- **contentOverride** (Content Studio)
+- **localDlcs** (DLC Builder)
+
+## GitHub Pages
+Suba o conteúdo do projeto no repositório e habilite Pages (rotas por hash).

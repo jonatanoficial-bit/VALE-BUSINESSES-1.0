@@ -3,8 +3,9 @@ import { Auth } from "./auth.js";
 import { Storage } from "./storage.js";
 import { ContentLoader } from "./contentLoader.js";
 import { UI } from "./ui.js";
+import { RBAC } from "./rbac.js";
 
-const CORE_VERSION="0.1.0";
+const CORE_VERSION="0.3.0";
 const state={ user:null, content:null, routes:null, activeModule:"dashboard" };
 
 async function bootstrap(){
@@ -26,7 +27,7 @@ async function bootstrap(){
 function render(route){
   UI.setTopbarMeta({
     subtitle: state.user ? `${state.user.name} • ${state.user.role}` : "Mobile-first • Premium AAA UI",
-    badges: [{text:`Core v${CORE_VERSION}`},{text:`Conteúdo ${state.content?.meta?.contentVersion ?? "—"}`}]
+    badges: [{text:`Core v${CORE_VERSION}`}, {text:`Conteúdo ${state.content?.meta?.contentVersion ?? "—"}`}]
   });
 
   if(route.name==="login"){
@@ -39,7 +40,7 @@ function render(route){
         state.routes.go("app",{module:"dashboard"});
       },
       onGoAdmin: ()=>state.routes.go("admin"),
-      demoUsers: Auth.getDemoUsers(),
+      usersSafe: Auth.getUsersSafe(),
     });
     return;
   }
@@ -50,16 +51,16 @@ function render(route){
       contentMeta: state.content.meta,
       enabledDlcs: Storage.getEnabledDLCs(),
       availableDlcs: state.content.dlcs,
+      modulesCatalog: state.content.modules.map(m=>m.id),
       onAdminLogin: async(payload)=>{
         const res=await Auth.adminLoginLocal(payload);
         if(!res.ok){ UI.toast("Acesso negado", res.error||"Senha incorreta."); return; }
         UI.toast("Admin","Modo administrador ativado.");
-        UI.setAdminMode(true);
       },
-      onAdminLogout: ()=>{ Auth.adminLogout(); UI.setAdminMode(false); },
+      onAdminLogout: ()=>{ Auth.adminLogout(); },
       onToggleDlc: (id,en)=>{ Storage.setDLCEnabled(id,en); UI.toast("DLC", en?"Ativada. Recarregue.":"Desativada. Recarregue."); },
       onResetApp: ()=>{ Storage.hardReset(); UI.toast("Reset","Dados apagados. Recarregue."); },
-      onExport: ()=>{ UI.downloadJSON(Storage.exportAll(), `empresarial-backup-${new Date().toISOString().slice(0,10)}.json`); UI.toast("Exportado","Backup baixado."); },
+      onExport: ()=>{ UI.downloadJSON(Storage.exportAll(), `cvb-backup-${new Date().toISOString().slice(0,10)}.json`); UI.toast("Exportado","Backup baixado."); },
       onImport: async(file)=>{ Storage.importAll(JSON.parse(await file.text())); UI.toast("Importado","Backup restaurado. Recarregue."); },
       onBackToApp: ()=>state.routes.go("app",{module:"dashboard"}),
     });
@@ -68,23 +69,35 @@ function render(route){
 
   if(route.name==="app"){
     if(!state.user){ state.routes.go("login"); return; }
-    const moduleId=route.params.module||"dashboard";
-    state.activeModule=moduleId;
-    const modules=state.content.modules;
-    const module=modules.find(m=>m.id===moduleId)||modules[0];
+    const visibleModules = RBAC.filterModulesForUser(state.user, state.content.modules);
+    const moduleId = route.params.module || "dashboard";
+
+    const permitted = visibleModules.find(m=>m.id===moduleId);
+    const fallback = visibleModules[0] || state.content.modules[0];
+
+    if(!permitted) {
+      UI.toast("Acesso restrito", "Seu usuário não tem permissão para esse setor.");
+      state.routes.go("app", { module: fallback?.id || "dashboard" });
+      return;
+    }
+
+    state.activeModule = moduleId;
+    const module = permitted;
+
     UI.renderApp({
-      user:state.user,
+      user: state.user,
       module,
-      modules,
-      data:Storage.getData(),
-      tutorials:state.content.tutorials,
+      modules: state.content.modules,
+      data: Storage.getData(),
+      tutorials: state.content.tutorials,
       onLogout: ()=>{ Auth.logout(); state.user=null; UI.toast("Sessão encerrada","Até logo!"); state.routes.go("login"); },
       onNavigate: (id)=>state.routes.go("app",{module:id}),
-      onSaveData: (patch)=>{ Storage.patchData(patch); UI.toast("Salvo","Alterações registradas."); state.routes.go("app",{module:state.activeModule}); }
+      onSaveData: (patch)=>{ Storage.patchData(patch); UI.toast("Salvo","Alterações registradas."); state.routes.go("app",{module: state.activeModule}); }
     });
     return;
   }
 
   state.routes.go(state.user ? "app":"login");
 }
+
 bootstrap();

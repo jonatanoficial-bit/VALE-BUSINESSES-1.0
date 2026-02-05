@@ -1,9 +1,9 @@
-/* Empresarial — Mobile-first AAA UI (Vanilla) */
+/* Chamara Vale Businesses — Mobile-first AAA UI (Vanilla) */
 :root{
   --bg0:#070A12; --bg1:#0B1020;
   --txt:#EAF0FF; --muted:rgba(234,240,255,.68); --muted2:rgba(234,240,255,.46);
   --brand:#7C5CFF; --brand2:#23D5FF; --good:#33D17A; --warn:#F7C948; --bad:#FF4D6D;
-  --r24:24px; --shadow:0 18px 55px rgba(0,0,0,.42); --shadow2:0 10px 30px rgba(0,0,0,.35);
+  --shadow:0 18px 55px rgba(0,0,0,.42); --shadow2:0 10px 30px rgba(0,0,0,.35);
   --blur:16px; --blur2:22px;
   --safe-top:env(safe-area-inset-top); --safe-bottom:env(safe-area-inset-bottom);
   --tap:44px; --maxw:1180px;
@@ -44,7 +44,6 @@ body{
 .kbd{font-size:12px;padding:4px 8px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.06);color:var(--txt)}
 
 .app-shell{min-height:100%; display:flex; flex-direction:column; padding-top:var(--safe-top); padding-bottom:calc(var(--safe-bottom) + 12px)}
-
 .topbar{position:sticky; top:0; backdrop-filter:blur(var(--blur2));
   background:linear-gradient(180deg, rgba(7,10,18,.72), rgba(7,10,18,.25));
   border-bottom:1px solid rgba(255,255,255,.07); z-index:20}
@@ -56,7 +55,6 @@ body{
 .brandname{display:flex; flex-direction:column; line-height:1.1}
 .brandname strong{font-size:14px; letter-spacing:.2px}
 .brandname span{font-size:12px; color:var(--muted2)}
-
 .iconbtn{width:44px;height:44px;display:grid;place-items:center;border-radius:16px;
   border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);
   backdrop-filter:blur(var(--blur)); box-shadow:var(--shadow2); color:var(--txt);
@@ -64,7 +62,6 @@ body{
   user-select:none; -webkit-tap-highlight-color:transparent}
 .iconbtn:active{transform:scale(.98)}
 .iconbtn:hover{border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.07)}
-
 .main{width:min(var(--maxw),100%); margin-inline:auto; padding:12px 16px 94px; display:flex; gap:14px}
 
 .bottombar{position:fixed; left:0; right:0; bottom:0; padding:10px 12px calc(var(--safe-bottom) + 10px); z-index:25;
@@ -87,17 +84,20 @@ body{
   cursor:pointer; border:1px solid transparent; transition:background .14s ease, border-color .14s ease, color .14s ease; user-select:none}
 .sideitem:hover{background:rgba(255,255,255,.05)}
 .sideitem.active{color:var(--txt); background:linear-gradient(135deg, rgba(124,92,255,.34), rgba(35,213,255,.12)); border-color:rgba(255,255,255,.12)}
-.sidegroup{margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,.08)}
 .sidehint{font-size:12px; color:var(--muted2); padding:10px 12px; line-height:1.4}
 
 .card{border-radius:26px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05); backdrop-filter:blur(var(--blur2)); box-shadow:var(--shadow2)}
-.card.pad{padding:14px} .card h2{margin:0 0 6px; font-size:16px} .card h3{margin:0 0 6px; font-size:14px}
+.card.pad{padding:14px}
+.card h2{margin:0 0 6px; font-size:16px}
+.card h3{margin:0 0 6px; font-size:14px}
 .card p{margin:0; color:var(--muted); line-height:1.6; font-size:13px}
 .grid{display:grid; grid-template-columns:1fr; gap:12px}
 
 .input{height:46px; width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:var(--txt);
   padding:0 14px; outline:none; transition:border-color .14s ease, background .14s ease}
 .input:focus{border-color:rgba(124,92,255,.55); background:rgba(255,255,255,.08)}
+textarea.input{height:auto; padding:12px 14px; min-height:120px; resize:vertical}
+select.input{appearance:none}
 .btn{height:46px; border-radius:16px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:var(--txt);
   font-weight:700; letter-spacing:.2px; cursor:pointer; padding:0 14px; user-select:none; -webkit-tap-highlight-color:transparent;
   transition:transform .12s ease, background .14s ease, border-color .14s ease; box-shadow:0 12px 25px rgba(0,0,0,.25)}
@@ -113,9 +113,6 @@ body{
 .pill{display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border-radius:14px;
   border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05); color:var(--muted); font-size:12px}
 .hr{height:1px; background:rgba(255,255,255,.08); margin:12px 0; border:0}
-.kpi{display:flex; align-items:flex-end; justify-content:space-between; gap:10px}
-.kpi strong{font-size:18px; letter-spacing:.2px}
-.kpi span{font-size:12px; color:var(--muted2)}
 .table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:18px;
   border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03)}
 .table th,.table td{padding:10px 10px; font-size:12px; border-bottom:1px solid rgba(255,255,255,.06); color:var(--muted)}
@@ -123,7 +120,6 @@ body{
 .table tr:last-child td{border-bottom:none}
 .table td strong{color:rgba(234,240,255,.92)}
 .split{display:flex; flex-direction:column; gap:12px}
-
 .toasts{position:fixed; top:calc(var(--safe-top) + 10px); right:10px; display:flex; flex-direction:column; gap:10px; z-index:120}
 .toast{width:min(360px, calc(100vw - 20px)); border-radius:18px; border:1px solid rgba(255,255,255,.12);
   background:rgba(255,255,255,.07); backdrop-filter:blur(var(--blur2)); box-shadow:var(--shadow2); padding:12px 12px;
@@ -131,7 +127,6 @@ body{
 .toast strong{display:block; font-size:13px; margin-bottom:4px}
 .toast p{margin:0; font-size:12px; color:var(--muted); line-height:1.45}
 @keyframes toastIn{from{opacity:0; transform:translateY(-10px)}to{opacity:1; transform:none}}
-
 @media (min-width:920px){
   .main{padding:16px 16px 16px}
   .sidebar{display:block}

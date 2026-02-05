@@ -1,0 +1,4 @@
+Chamara Vale Businesses 1.0
+Core: v0.3.0
+build_date: 2026-02-05
+build_stamp: 20260205_211226

@@ -9,11 +9,10 @@
       "label": "Analytics",
       "order": 7,
       "hint": "Indicadores",
-      "description": "Expansão exemplo: tela de indicadores e semáforo financeiro.",
+      "description": "Expansão exemplo: tela de indicadores (placeholder).",
       "tags": [
         "DLC",
-        "indicadores",
-        "visão rápida"
+        "indicadores"
       ]
     }
   ]

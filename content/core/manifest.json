@@ -1,6 +1,6 @@
 {
-  "id": "empresarial.core",
-  "name": "Empresarial Core",
+  "id": "cvb.core",
+  "name": "Chamara Vale Businesses Core",
   "contentVersion": "2026.02.05",
   "dlcIndex": [
     "sample-analytics"
@@ -23,11 +23,10 @@
       "label": "Financeiro",
       "order": 2,
       "hint": "Caixa e orçamento",
-      "description": "Controle de caixa, contas a pagar/receber e orçamento. Evolui para DRE/centros de custo.",
+      "description": "Controle de caixa, contas a pagar/receber e orçamento.",
       "tags": [
         "fluxo de caixa",
-        "previsibilidade",
-        "saída da informalidade"
+        "previsibilidade"
       ]
     },
     {
@@ -38,7 +37,6 @@
       "description": "Cadastro de colaboradores e planejamento de contratações.",
       "tags": [
         "contratações",
-        "folha",
         "organização"
       ]
     },
@@ -50,7 +48,6 @@
       "description": "Projetos, prazos, responsáveis e rotinas operacionais.",
       "tags": [
         "execução",
-        "crescimento",
         "processos"
       ]
     },
@@ -74,8 +71,7 @@
       "description": "Entradas/saídas, custo médio, alertas e integração com vendas (próxima etapa).",
       "tags": [
         "produtos",
-        "custos",
-        "alertas"
+        "custos"
       ]
     }
   ],
@@ -92,12 +88,12 @@
       "summary": "Comece simples: registre tudo. Em poucos meses você terá histórico e previsibilidade.",
       "steps": [
         "Defina saldo do caixa",
-        "Cadastre pagar/receber (com data de vencimento)",
+        "Cadastre pagar/receber (com data)",
         "Configure um orçamento mensal básico"
       ]
     },
     "hr": {
-      "summary": "RH aqui é prático: pessoas, vínculo e planejamento de contratações sem complicar.",
+      "summary": "RH prático: pessoas, vínculo e planejamento de contratações sem complicar.",
       "steps": [
         "Cadastre colaboradores e tipo de vínculo",
         "Registre salário/valor",
@@ -105,7 +101,7 @@
       ]
     },
     "projects": {
-      "summary": "Projetos e rotinas ajudam a empresa a crescer sem depender de “memória” ou improviso.",
+      "summary": "Projetos e rotinas ajudam a empresa a crescer sem depender de improviso.",
       "steps": [
         "Crie um projeto e defina prazo",
         "Atribua um responsável",
