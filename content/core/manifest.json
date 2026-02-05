@@ -1,0 +1,116 @@
+{
+  "id": "empresarial.core",
+  "name": "Empresarial Core",
+  "contentVersion": "2026.02.05",
+  "dlcIndex": [
+    "sample-analytics"
+  ],
+  "modules": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "order": 1,
+      "hint": "Resumo mensal",
+      "description": "Indicadores essenciais para decisão rápida, sem poluição.",
+      "tags": [
+        "essencial",
+        "iniciantes",
+        "mês a mês"
+      ]
+    },
+    {
+      "id": "finance",
+      "label": "Financeiro",
+      "order": 2,
+      "hint": "Caixa e orçamento",
+      "description": "Controle de caixa, contas a pagar/receber e orçamento. Evolui para DRE/centros de custo.",
+      "tags": [
+        "fluxo de caixa",
+        "previsibilidade",
+        "saída da informalidade"
+      ]
+    },
+    {
+      "id": "hr",
+      "label": "RH",
+      "order": 3,
+      "hint": "Pessoas e plano",
+      "description": "Cadastro de colaboradores e planejamento de contratações.",
+      "tags": [
+        "contratações",
+        "folha",
+        "organização"
+      ]
+    },
+    {
+      "id": "projects",
+      "label": "Projetos",
+      "order": 4,
+      "hint": "Entregas e rotinas",
+      "description": "Projetos, prazos, responsáveis e rotinas operacionais.",
+      "tags": [
+        "execução",
+        "crescimento",
+        "processos"
+      ]
+    },
+    {
+      "id": "sales",
+      "label": "Vendas/CRM",
+      "order": 5,
+      "hint": "Em breve",
+      "description": "Pipeline, clientes, propostas, pós-venda (próxima etapa).",
+      "tags": [
+        "pipeline",
+        "clientes",
+        "receita"
+      ]
+    },
+    {
+      "id": "inventory",
+      "label": "Estoque",
+      "order": 6,
+      "hint": "Em breve",
+      "description": "Entradas/saídas, custo médio, alertas e integração com vendas (próxima etapa).",
+      "tags": [
+        "produtos",
+        "custos",
+        "alertas"
+      ]
+    }
+  ],
+  "tutorials": {
+    "dashboard": {
+      "summary": "O Dashboard te dá o mínimo para decidir: caixa atual, contas abertas e uma projeção simples.",
+      "steps": [
+        "Confirme o saldo em caixa (Financeiro)",
+        "Cadastre contas a pagar/receber do mês",
+        "Use a projeção para planejar investimentos"
+      ]
+    },
+    "finance": {
+      "summary": "Comece simples: registre tudo. Em poucos meses você terá histórico e previsibilidade.",
+      "steps": [
+        "Defina saldo do caixa",
+        "Cadastre pagar/receber (com data de vencimento)",
+        "Configure um orçamento mensal básico"
+      ]
+    },
+    "hr": {
+      "summary": "RH aqui é prático: pessoas, vínculo e planejamento de contratações sem complicar.",
+      "steps": [
+        "Cadastre colaboradores e tipo de vínculo",
+        "Registre salário/valor",
+        "Planeje a próxima contratação por mês"
+      ]
+    },
+    "projects": {
+      "summary": "Projetos e rotinas ajudam a empresa a crescer sem depender de “memória” ou improviso.",
+      "steps": [
+        "Crie um projeto e defina prazo",
+        "Atribua um responsável",
+        "Transforme tarefas repetidas em rotinas"
+      ]
+    }
+  }
+}

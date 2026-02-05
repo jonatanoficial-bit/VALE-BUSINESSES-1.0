@@ -1,0 +1,20 @@
+{
+  "id": "dlc.sample_analytics",
+  "name": "Analytics Pack (Exemplo)",
+  "version": "1.0.0",
+  "compatibleCore": ">=0.1.0",
+  "modules": [
+    {
+      "id": "analytics",
+      "label": "Analytics",
+      "order": 7,
+      "hint": "Indicadores",
+      "description": "Expansão exemplo: tela de indicadores e semáforo financeiro.",
+      "tags": [
+        "DLC",
+        "indicadores",
+        "visão rápida"
+      ]
+    }
+  ]
+}
