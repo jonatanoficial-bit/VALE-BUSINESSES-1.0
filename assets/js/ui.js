@@ -1,6 +1,7 @@
 import { Auth } from "./auth.js";
 import { Storage } from "./storage.js";
 import { RBAC } from "./rbac.js";
+import { BUILD } from "./build.js";
 
 const icons={
   spark:(s=20)=>svg(`<path d="M11.5 2l1.1 3.2L16 6.3l-3.4 1.1L11.5 11 10.4 7.4 7 6.3l3.4-1.1L11.5 2z"/><path opacity=".6" d="M6 12l.8 2.3L9 15.1l-2.2.8L6 18l-.8-2.1L3 15.1l2.2-.8L6 12z"/><path opacity=".55" d="M16 12l.8 2.3 2.2.8-2.2.8L16 18l-.8-2.1-2.2-.8 2.2-.8L16 12z"/>`,s),
@@ -17,6 +18,7 @@ const icons={
   pencil:(s=20)=>svg(`<path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>`,s),
   plus:(s=20)=>svg(`<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,s),
   trash:(s=20)=>svg(`<path d="M3 6h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 6V4h8v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6 6l1 16h10l1-16" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>`,s),
+  lock:(s=20)=>svg(`<path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6 11h12v10H6V11z" stroke="currentColor" stroke-width="2" fill="none"/>`,s),
 };
 
 function svg(paths,size=20){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${paths}</svg>`;}
@@ -34,7 +36,7 @@ export const UI={
         <div class="brandmark" aria-hidden="true"></div>
         <div class="brandname"><strong>Chamara Vale Businesses</strong><span id="top-subtitle">Gestão premium para PMEs</span></div>
         <div class="spacer"></div>
-        <span id="top-badges" class="row" style="gap:8px"></span>
+        <span id="top-badges" class="row" style="gap:8px;flex-wrap:wrap;justify-content:flex-end"></span>
         <button id="top-logout" class="iconbtn hidden" title="Sair" aria-label="Sair">${icons.logout(20)}</button>
         <button id="top-admin" class="iconbtn" title="Admin" aria-label="Admin">${icons.shield(20)}</button>
       </div></div>
@@ -59,24 +61,29 @@ export const UI={
     a.href=url; a.download=filename||"export.json"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   },
 
-  renderLogin({onLogin,onGoAdmin,usersSafe}){
+  renderLogin({onLogin,onGoAdmin,usersSafe,settings}){
     const content=root.querySelector("#content"); content.innerHTML="";
     root.querySelector("#top-logout").classList.add("hidden");
     root.querySelector("#top-admin").classList.remove("hidden");
     root.querySelector("#top-admin").onclick=onGoAdmin;
 
-    const list = usersSafe.filter(u=>u.active!==false).slice(0,8);
+    const sec=(settings?.security||{});
+    const privacy=!!sec.privacyMode;
+
+    const list = privacy ? [] : usersSafe.filter(u=>u.active!==false).slice(0,8);
+
     const card=el(`
       <div class="container"><div class="card pad" style="max-width:760px;margin:16px auto;">
         <div class="row" style="gap:12px;align-items:flex-start;">
           <div style="min-width:44px;height:44px" class="brandmark"></div>
           <div class="col" style="gap:6px;">
             <h2 style="margin:0;font-size:18px;">Entrar</h2>
-            <p>Agora com <span class="kbd">RBAC</span> e <span class="kbd">Content Studio</span>.</p>
+            <p>Mobile-first AAA • <span class="kbd">RBAC</span> • <span class="kbd">DLC</span> • <span class="kbd">Content Studio</span></p>
             <div class="row" style="flex-wrap:wrap;">
               <span class="pill">${icons.users(18)} Usuários</span>
               <span class="pill">${icons.shield(18)} Admin</span>
               <span class="pill">${icons.pencil(18)} Conteúdo</span>
+              <span class="pill">${icons.lock(18)} Segurança</span>
             </div>
           </div>
         </div>
@@ -85,31 +92,43 @@ export const UI={
 
         <div class="grid">
           <div class="card pad" style="background:rgba(255,255,255,.04);">
-            <h3>Entrar por perfil</h3>
-            <p class="muted">Senha padrão demo: <span class="kbd">1234</span></p>
-            <div class="col" style="gap:10px;margin-top:10px;">
-              ${list.map(u=>`<button class="btn" data-user="${escAttr(u.id)}">${icons.spark(18)} ${esc(u.role)} • ${esc(u.name)}</button>`).join("")}
-            </div>
-          </div>
-
-          <div class="card pad" style="background:rgba(255,255,255,.04);">
             <h3>Login por e-mail</h3>
-            <p class="muted">MVP local. Depois liga Firebase/Auth.</p>
+            <p class="muted">MVP local. Para produção: Firebase/Zero Trust.</p>
             <div class="col" style="gap:10px;margin-top:10px;">
+              ${sec.companyLockEnabled?`<input class="input" id="companyKey" placeholder="Código da empresa" autocomplete="one-time-code"/>`:""}
               <input class="input" id="email" placeholder="E-mail" inputmode="email" autocomplete="username"/>
               <input class="input" id="pass" placeholder="Senha" type="password" autocomplete="current-password"/>
               <button class="btn primary" id="loginbtn">${icons.spark(18)} Entrar</button>
               <button class="btn ghost" id="adminbtn">${icons.shield(18)} Abrir Admin</button>
             </div>
-            <p class="muted2" style="margin-top:10px;">Dica: no Admin você cria usuários, permissões e edita conteúdo.</p>
+            <p class="muted2" style="margin-top:10px;">Build: <span class="kbd">${esc(BUILD.buildLabel)}</span></p>
+          </div>
+
+          <div class="card pad" style="background:rgba(255,255,255,.04);">
+            <h3>Entrar por perfil</h3>
+            <p class="muted">${privacy?`Oculto por privacidade (Admin → Segurança).`:`Senha padrão demo: <span class="kbd">1234</span>`}</p>
+            <div class="col" style="gap:10px;margin-top:10px;">
+              ${list.length?list.map(u=>`<button class="btn" data-user="${escAttr(u.id)}">${icons.spark(18)} ${esc(u.role)} • ${esc(u.name)}</button>`).join(""):`<div class="muted2">—</div>`}
+            </div>
           </div>
         </div>
       </div></div>
     `);
     content.appendChild(card);
 
-    content.querySelectorAll("[data-user]").forEach(b=>b.addEventListener("click",()=>onLogin({userId:b.getAttribute("data-user"), password:content.querySelector("#pass").value})));
-    content.querySelector("#loginbtn").addEventListener("click",()=>onLogin({email:content.querySelector("#email").value, password:content.querySelector("#pass").value}));
+    const getCompanyKey=()=>content.querySelector("#companyKey")?.value;
+
+    content.querySelectorAll("[data-user]").forEach(b=>b.addEventListener("click",()=>{
+      const pass = content.querySelector("#pass").value;
+      onLogin({userId:b.getAttribute("data-user"), password:pass, companyKey:getCompanyKey()});
+    }));
+
+    content.querySelector("#loginbtn").addEventListener("click",()=>onLogin({
+      email:content.querySelector("#email").value,
+      password:content.querySelector("#pass").value,
+      companyKey:getCompanyKey()
+    }));
+
     content.querySelector("#adminbtn").addEventListener("click",onGoAdmin);
   },
 
@@ -117,6 +136,8 @@ export const UI={
     const content=root.querySelector("#content"); content.innerHTML="";
     root.querySelector("#top-logout").classList.add("hidden");
 
+    const settings=Storage.getSettings();
+    const sec=settings.security||{};
     const enabled=new Set(enabledDlcs||[]);
     const dlcRows=(availableDlcs||[]).map(d=>{
       const on=enabled.has(d.id);
@@ -143,10 +164,10 @@ export const UI={
     `).join("");
 
     const node=el(`<div class="container"><div class="card pad" style="margin:16px auto;max-width:1100px;">
-      <div class="row" style="align-items:flex-start;">
-        <div class="col" style="gap:6px;">
+      <div class="row" style="align-items:flex-start;flex-wrap:wrap">
+        <div class="col" style="gap:6px;min-width:240px;">
           <h2 style="margin:0;">Admin</h2>
-          <p class="muted">Etapa 3: <span class="kbd">Content Studio</span> + <span class="kbd">DLC Builder (local)</span></p>
+          <p class="muted">Build visível: <span class="kbd">${esc(BUILD.buildLabel)}</span></p>
           <div class="row" style="flex-wrap:wrap;">
             <span class="badge">${icons.spark(16)} Core v${esc(coreVersion)}</span>
             <span class="badge">${icons.plug(16)} Conteúdo v${esc(contentMeta?.contentVersion||"—")}</span>
@@ -168,7 +189,7 @@ export const UI={
             <button class="btn primary" id="adminlogin">${icons.shield(18)} Ativar</button>
             <button class="btn" id="adminlogout">Sair</button>
           </div>
-          <p class="muted2" style="margin-top:10px;">Admin mode libera editar conteúdo e criar DLC local.</p>
+          <p class="muted2" style="margin-top:10px;">Admin mode libera: usuários, segurança, conteúdo e DLC local.</p>
         </div>
 
         <div class="card pad" style="background:rgba(255,255,255,.04);">
@@ -180,7 +201,7 @@ export const UI={
             </label>
             <button class="btn danger" id="reset">${icons.gear(18)} Reset</button>
           </div>
-          <p class="muted2" style="margin-top:10px;">Export inclui: dados + DLCs + usuários + conteúdo (override) + DLCs locais.</p>
+          <p class="muted2" style="margin-top:10px;">Export inclui: dados + DLCs + usuários + settings + conteúdo + DLCs locais.</p>
         </div>
       </div>
 
@@ -204,16 +225,48 @@ export const UI={
         </div>
 
         <div class="card pad" style="background:rgba(255,255,255,.04);">
+          <h3>Segurança (modo empresa)</h3>
+          <p class="muted">Em GitHub Pages (público), isso é uma camada extra. Para segurança real: Cloudflare Access / Firebase.</p>
+
+          <div class="col" style="gap:10px;margin-top:10px;">
+            <label class="row" style="gap:10px;align-items:center;">
+              <input type="checkbox" id="privacyMode" style="width:18px;height:18px;" ${sec.privacyMode?"checked":""}>
+              <span class="muted">Privacidade: esconder lista de perfis na tela de login</span>
+            </label>
+
+            <div class="card pad" style="background:rgba(255,255,255,.03);">
+              <div class="row"><span class="badge">${icons.lock(16)} Company Lock</span><div class="spacer"></div><span class="muted2">${sec.companyLockEnabled?"ATIVO":"inativo"}</span></div>
+              <p class="muted2" style="margin-top:8px;">Define um “código da empresa” obrigatório para logar.</p>
+              <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+                <input class="input" id="companyKey" placeholder="Novo código (deixe vazio para desativar)" type="password" style="flex:1;min-width:220px;">
+                <button class="btn primary" id="saveCompanyKey">${icons.spark(18)} Aplicar</button>
+              </div>
+            </div>
+
+            <div class="card pad" style="background:rgba(255,255,255,.03);">
+              <h3 style="margin:0;">Restrição por e-mail</h3>
+              <p class="muted2" style="margin-top:8px;">Opcional. Exemplo domínio: <span class="kbd">empresa.com</span> (sem @)</p>
+              <div class="row" style="flex-wrap:wrap;margin-top:10px;">
+                <input class="input" id="domain" placeholder="Domínio permitido" value="${escAttr(sec.allowedEmailDomain||"")}" style="flex:1;min-width:220px;">
+                <button class="btn" id="saveDomain">${icons.spark(18)} Salvar</button>
+              </div>
+
+              <p class="muted2" style="margin-top:10px;">Lista autorizada (um e-mail por linha):</p>
+              <textarea class="input" id="allowlist" placeholder="ex.:
+ana@empresa.com
+joao@empresa.com">${esc((sec.allowlistEmails||[]).join("\n"))}</textarea>
+              <button class="btn" id="saveAllowlist">${icons.spark(18)} Salvar lista</button>
+            </div>
+          </div>
+
+          <hr class="hr"/>
+
           <div class="row">
             <h3 style="margin:0;">Content Studio</h3>
             <div class="spacer"></div>
             <button class="btn small primary" id="editContent">${icons.pencil(18)} Editar</button>
           </div>
-          <p class="muted">Edite nomes, descrições e tutorial dos setores (salva em <span class="kbd">localStorage</span> como override).</p>
-          <div class="row" style="flex-wrap:wrap;margin-top:10px;">
-            <span class="badge">${icons.spark(16)} Sem backend</span>
-            <span class="badge">${icons.spark(16)} Exportável</span>
-          </div>
+          <p class="muted">Edite nomes, descrições, tags e tutorial dos setores (override local).</p>
 
           <hr class="hr"/>
 
@@ -222,7 +275,7 @@ export const UI={
             <div class="spacer"></div>
             <button class="btn small" id="newDlc">${icons.plus(18)} Nova DLC</button>
           </div>
-          <p class="muted">Crie DLCs locais (ex.: “Setor Qualidade”, “Compliance”, “Metas”).</p>
+          <p class="muted">Crie DLCs locais (novos setores placeholder).</p>
         </div>
       </div>
 
@@ -243,22 +296,60 @@ export const UI={
 
     // Wiring
     node.querySelector("#backbtn").addEventListener("click",onBackToApp);
+
     node.querySelector("#adminlogin").addEventListener("click",()=>onAdminLogin({adminPassword:node.querySelector("#adminpass").value}));
     node.querySelector("#adminlogout").addEventListener("click",()=>{onAdminLogout(); UI.toast("Admin","Desativado.");});
+
     node.querySelector("#export").addEventListener("click",onExport);
     node.querySelector("#reset").addEventListener("click",onResetApp);
     node.querySelector("#import").addEventListener("change",(e)=>{const f=e.target.files?.[0]; if(f) onImport(f); e.target.value="";});
 
     node.querySelectorAll("[data-dlc]").forEach(b=>b.addEventListener("click",()=>{const id=b.getAttribute("data-dlc"); const on=b.getAttribute("data-on")==="1"; onToggleDlc(id,!on);}));    
 
-    node.querySelector("#newUser").addEventListener("click",()=>openUserEditor({ modulesCatalog }));
+    // Security settings
+    node.querySelector("#privacyMode").addEventListener("change",(e)=>{
+      const s=Storage.getSettings();
+      s.security = s.security || {};
+      s.security.privacyMode = e.target.checked;
+      Storage.saveSettings(s);
+      UI.toast("Segurança","Privacidade atualizada.");
+    });
 
+    node.querySelector("#saveCompanyKey").addEventListener("click",async()=>{
+      if(!Auth.isAdminMode()){ UI.toast("Admin","Ative o modo admin."); return; }
+      const key = node.querySelector("#companyKey").value;
+      const res = await Auth.setCompanyKey(key);
+      UI.toast("Company Lock", key ? "Código atualizado." : "Company Lock desativado.");
+      node.querySelector("#companyKey").value="";
+    });
+
+    node.querySelector("#saveDomain").addEventListener("click",()=>{
+      if(!Auth.isAdminMode()){ UI.toast("Admin","Ative o modo admin."); return; }
+      const dom = node.querySelector("#domain").value.trim().replace(/^@/,"");
+      const s=Storage.getSettings();
+      s.security = s.security || {};
+      s.security.allowedEmailDomain = dom;
+      Storage.saveSettings(s);
+      UI.toast("Segurança","Domínio salvo.");
+    });
+
+    node.querySelector("#saveAllowlist").addEventListener("click",()=>{
+      if(!Auth.isAdminMode()){ UI.toast("Admin","Ative o modo admin."); return; }
+      const lines = node.querySelector("#allowlist").value.split("\n").map(x=>x.trim()).filter(Boolean);
+      const s=Storage.getSettings();
+      s.security = s.security || {};
+      s.security.allowlistEmails = lines;
+      Storage.saveSettings(s);
+      UI.toast("Segurança","Lista autorizada salva.");
+    });
+
+    // Users
+    node.querySelector("#newUser").addEventListener("click",()=>openUserEditor({ modulesCatalog }));
     node.querySelectorAll("[data-edit-user]").forEach(b=>b.addEventListener("click",()=>{
       const id=b.getAttribute("data-edit-user");
       const u=Storage.getUsers().find(x=>x.id===id);
       if(u) openUserEditor({ user:u, modulesCatalog });
     }));
-
     node.querySelectorAll("[data-del-user]").forEach(b=>b.addEventListener("click",()=>{
       const id=b.getAttribute("data-del-user");
       if(!Auth.isAdminMode()){ UI.toast("Admin","Ative o modo admin para remover."); return; }
@@ -268,11 +359,11 @@ export const UI={
       setTimeout(()=>location.reload(), 250);
     }));
 
+    // Content Studio + DLC Builder
     node.querySelector("#editContent").addEventListener("click",()=>{
       if(!Auth.isAdminMode()){ UI.toast("Admin","Ative o modo admin para editar conteúdo."); return; }
       openContentStudio({ modulesCatalog });
     });
-
     node.querySelector("#newDlc").addEventListener("click",()=>{
       if(!Auth.isAdminMode()){ UI.toast("Admin","Ative o modo admin para criar DLC."); return; }
       openDlcBuilder();
@@ -378,7 +469,6 @@ function openUserEditor({ user=null, modulesCatalog=[] }){
 
 function openContentStudio({ modulesCatalog }){
   const override = Storage.getContentOverride() || { modules:[], tutorials:{} };
-  const coreModules = modulesCatalog.map(id=>({id}));
 
   // Build editable list: merge any override module fields
   const map = new Map((override.modules||[]).map(m=>[m.id,m]));
@@ -465,7 +555,7 @@ function openContentStudio({ modulesCatalog }){
             <div class="col" style="gap:10px;margin-top:10px;">
               <input class="input" id="label" placeholder="Label (nome)" value="${escAttr(m.label||"")}">
               <input class="input" id="hint" placeholder="Hint (resumo curto)" value="${escAttr(m.hint||"")}">
-              <input class="input" id="order" placeholder="Order (número)" inputmode="numeric" value="${escAttr(String(m.order??""))}">
+              <input class="input" id="order" placeholder="Order (número)" inputmode="numeric" value="${escAttr(m.order===undefined? "" : String(m.order))}">
               <textarea class="input" id="desc" placeholder="Descrição">${esc(m.description||"")}</textarea>
               <input class="input" id="tags" placeholder="Tags (separadas por vírgula)" value="${escAttr((m.tags||[]).join(", "))}">
             </div>
@@ -487,7 +577,7 @@ function openContentStudio({ modulesCatalog }){
           <button class="btn primary" id="save">${icons.spark(18)} Salvar setor</button>
           <button class="btn danger" id="remove">${icons.trash(18)} Remover override deste setor</button>
           <div class="spacer"></div>
-          <span class="muted2">Obs: remover override não apaga o setor do core.</span>
+          <span class="muted2">Remover override não apaga o setor do core.</span>
         </div>
       </div>
     </div>`);
@@ -497,7 +587,8 @@ function openContentStudio({ modulesCatalog }){
     modal.querySelector("#save").addEventListener("click",()=>{
       const label=modal.querySelector("#label").value.trim();
       const hint=modal.querySelector("#hint").value.trim();
-      const order=Number(modal.querySelector("#order").value||"");
+      const orderRaw=modal.querySelector("#order").value.trim();
+      const order = orderRaw==="" ? undefined : Number(orderRaw);
       const description=modal.querySelector("#desc").value.trim();
       const tags=modal.querySelector("#tags").value.split(",").map(x=>x.trim()).filter(Boolean);
 
@@ -518,7 +609,6 @@ function openContentStudio({ modulesCatalog }){
     modal.querySelector("#remove").addEventListener("click",()=>{
       override.modules = (override.modules||[]).filter(x=>x.id!==id);
       if(override.tutorials) delete override.tutorials[id];
-      const current = list[idx];
       list[idx] = { id }; // clear local fields
       UI.toast("Content Studio","Override removido deste setor.");
       renderRows();
@@ -533,6 +623,7 @@ function openContentStudio({ modulesCatalog }){
     if(!clean){ UI.toast("Atenção","ID inválido."); return; }
     if(list.some(x=>x.id===clean)){ UI.toast("Atenção","ID já existe."); return; }
     list.push({id:clean,label:"Novo setor",hint:"em breve",description:"Setor criado via Content Studio.",tags:["novo"],order:999});
+    modulesCatalog.push(clean);
     renderRows();
     UI.toast("Content Studio","Setor criado (override). Edite os detalhes.");
   });
@@ -607,7 +698,9 @@ function openDlcBuilder(){
     const hint = overlay.querySelector("#mhint").value.trim();
     const description = overlay.querySelector("#mdesc").value.trim();
     const tags = overlay.querySelector("#mtags").value.split(",").map(x=>x.trim()).filter(Boolean);
-    const order = Number(overlay.querySelector("#morder").value||"");
+    const orderRaw = overlay.querySelector("#morder").value.trim();
+    const order = orderRaw==="" ? undefined : Number(orderRaw);
+
     if(!id || !name || !mid || !label) return { ok:false, error:"Preencha ID, Nome, module id e label." };
 
     const dlc = { id, name, version, compatibleCore, modules:[{ id: mid, label, hint, description, tags, order: Number.isFinite(order)?order:999 }] };
@@ -655,7 +748,6 @@ function iconFor(id){
   return icons.spark(18);
 }
 
-// Views (same as v0.2, trimmed)
 function renderModule(user,module,data,tutorials,onSaveData){
   const wrap=el(`<div class="col" style="gap:12px;min-width:0;"></div>`);
   wrap.appendChild(el(`<div class="card pad"><div class="row" style="align-items:flex-start;">

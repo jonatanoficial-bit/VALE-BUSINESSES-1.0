@@ -1,4 +1,6 @@
 Chamara Vale Businesses 1.0
-Core: v0.3.0
-build_date: 2026-02-05
-build_stamp: 20260205_211226
+Core: v0.3.1
+build_date: 2026-02-13
+build_time: 14:07:19
+build_stamp: 20260213_140719
+build_label: 2026-02-13 14:07:19 (BRT)

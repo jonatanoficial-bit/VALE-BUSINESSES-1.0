@@ -1,6 +1,7 @@
 const KEY="cvb:data:v1";
 const KEY_DLC="cvb:dlc:enabled:v1";
 const KEY_USERS="cvb:users:v1";
+const KEY_SETTINGS="cvb:settings:v1";
 const KEY_CONTENT_OVR="cvb:content:override:v1";
 const KEY_LOCAL_DLCS="cvb:dlc:local:v1";
 
@@ -12,6 +13,20 @@ const defaultUsers = [
   { id:"u3", name:"RH", email:"rh@empresa.com", role:"Recursos Humanos", password:"1234", perms:["dashboard","hr"], active:true },
   { id:"u4", name:"Projetos", email:"pm@empresa.com", role:"Projetos", password:"1234", perms:["dashboard","projects"], active:true },
 ];
+
+const defaultSettings = {
+  security:{
+    // hide profile quick-picks on login screen (avoid exposing user list on public Pages)
+    privacyMode: true,
+    // optional "company code" to gate login on public hosting
+    companyLockEnabled: false,
+    companyLockHash: null, // sha-256 hex
+    // optional: allow only emails on a domain (ex.: empresa.com)
+    allowedEmailDomain: "",
+    // optional: allow only specific emails (invite-only)
+    allowlistEmails: []
+  }
+};
 
 const defaultData={
   meta:{createdAt:nowISO(),updatedAt:nowISO()},
@@ -43,8 +58,13 @@ export const Storage={
     if(!localStorage.getItem(KEY)) localStorage.setItem(KEY,JSON.stringify(defaultData));
     if(!localStorage.getItem(KEY_DLC)) localStorage.setItem(KEY_DLC,JSON.stringify(["dlc.sample_analytics"]));
     if(!localStorage.getItem(KEY_USERS)) localStorage.setItem(KEY_USERS,JSON.stringify(defaultUsers));
+    if(!localStorage.getItem(KEY_SETTINGS)) localStorage.setItem(KEY_SETTINGS,JSON.stringify(defaultSettings));
     if(!localStorage.getItem(KEY_LOCAL_DLCS)) localStorage.setItem(KEY_LOCAL_DLCS,JSON.stringify([]));
   },
+
+  // Settings
+  getSettings(){ try{ return JSON.parse(localStorage.getItem(KEY_SETTINGS)||"null")||structuredClone(defaultSettings);}catch{ return structuredClone(defaultSettings);} },
+  saveSettings(settings){ localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings||defaultSettings)); },
 
   // App data
   getData(){ try{ return JSON.parse(localStorage.getItem(KEY)||"null")||structuredClone(defaultData);}catch{ return structuredClone(defaultData);} },
@@ -89,27 +109,32 @@ export const Storage={
   // Backup
   exportAll(){ 
     return {
-      schema:"cvb.backup.v3",
+      schema:"cvb.backup.v4",
       exportedAt:new Date().toISOString(),
       data:this.getData(),
       enabledDlcs:this.getEnabledDLCs(),
       users:this.getUsers(),
+      settings:this.getSettings(),
       contentOverride:this.getContentOverride(),
       localDlcs:this.getLocalDlcs(),
     };
   },
   importAll(pack){
     if(!pack) throw new Error("Backup inválido.");
-    if(pack.schema==="cvb.backup.v2"){
+    // backward compat
+    if(pack.schema==="cvb.backup.v2" || pack.schema==="cvb.backup.v3"){
       localStorage.setItem(KEY,JSON.stringify(pack.data));
       localStorage.setItem(KEY_DLC,JSON.stringify(pack.enabledDlcs||[]));
       localStorage.setItem(KEY_USERS,JSON.stringify(pack.users||[]));
+      if(pack.contentOverride) localStorage.setItem(KEY_CONTENT_OVR, JSON.stringify(pack.contentOverride)); else localStorage.removeItem(KEY_CONTENT_OVR);
+      localStorage.setItem(KEY_LOCAL_DLCS, JSON.stringify(pack.localDlcs||[]));
       return;
     }
-    if(pack.schema!=="cvb.backup.v3") throw new Error("Backup inválido (schema).");
+    if(pack.schema!=="cvb.backup.v4") throw new Error("Backup inválido (schema).");
     localStorage.setItem(KEY,JSON.stringify(pack.data));
     localStorage.setItem(KEY_DLC,JSON.stringify(pack.enabledDlcs||[]));
     localStorage.setItem(KEY_USERS,JSON.stringify(pack.users||[]));
+    localStorage.setItem(KEY_SETTINGS,JSON.stringify(pack.settings||defaultSettings));
     if(pack.contentOverride) localStorage.setItem(KEY_CONTENT_OVR, JSON.stringify(pack.contentOverride)); else localStorage.removeItem(KEY_CONTENT_OVR);
     localStorage.setItem(KEY_LOCAL_DLCS, JSON.stringify(pack.localDlcs||[]));
   },
@@ -118,6 +143,7 @@ export const Storage={
     localStorage.removeItem(KEY);
     localStorage.removeItem(KEY_DLC);
     localStorage.removeItem(KEY_USERS);
+    localStorage.removeItem(KEY_SETTINGS);
     localStorage.removeItem(KEY_CONTENT_OVR);
     localStorage.removeItem(KEY_LOCAL_DLCS);
     localStorage.removeItem("cvb:auth:session:v1");

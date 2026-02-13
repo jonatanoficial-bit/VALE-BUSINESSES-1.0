@@ -1,7 +1,7 @@
 {
   "id": "cvb.core",
   "name": "Chamara Vale Businesses Core",
-  "contentVersion": "2026.02.05",
+  "contentVersion": "2026.02.13",
   "dlcIndex": [
     "sample-analytics"
   ],
@@ -56,7 +56,7 @@
       "label": "Vendas/CRM",
       "order": 5,
       "hint": "Em breve",
-      "description": "Pipeline, clientes, propostas, pós-venda (próxima etapa).",
+      "description": "Pipeline, clientes, propostas, pós-venda (próximas etapas).",
       "tags": [
         "pipeline",
         "clientes",
@@ -68,7 +68,7 @@
       "label": "Estoque",
       "order": 6,
       "hint": "Em breve",
-      "description": "Entradas/saídas, custo médio, alertas e integração com vendas (próxima etapa).",
+      "description": "Entradas/saídas, custo médio, alertas e integração com vendas (próximas etapas).",
       "tags": [
         "produtos",
         "custos"

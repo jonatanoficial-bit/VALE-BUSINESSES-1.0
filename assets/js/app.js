@@ -4,8 +4,9 @@ import { Storage } from "./storage.js";
 import { ContentLoader } from "./contentLoader.js";
 import { UI } from "./ui.js";
 import { RBAC } from "./rbac.js";
+import { BUILD } from "./build.js";
 
-const CORE_VERSION="0.3.0";
+const CORE_VERSION="0.3.1";
 const state={ user:null, content:null, routes:null, activeModule:"dashboard" };
 
 async function bootstrap(){
@@ -27,7 +28,11 @@ async function bootstrap(){
 function render(route){
   UI.setTopbarMeta({
     subtitle: state.user ? `${state.user.name} • ${state.user.role}` : "Mobile-first • Premium AAA UI",
-    badges: [{text:`Core v${CORE_VERSION}`}, {text:`Conteúdo ${state.content?.meta?.contentVersion ?? "—"}`}]
+    badges: [
+      {text:`Core v${CORE_VERSION}`},
+      {text:`Build ${BUILD.buildLabel}`},
+      {text:`Conteúdo ${state.content?.meta?.contentVersion ?? "—"}`}
+    ]
   });
 
   if(route.name==="login"){
@@ -41,6 +46,7 @@ function render(route){
       },
       onGoAdmin: ()=>state.routes.go("admin"),
       usersSafe: Auth.getUsersSafe(),
+      settings: Storage.getSettings(),
     });
     return;
   }

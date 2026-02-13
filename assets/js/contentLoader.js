@@ -11,9 +11,11 @@ export const ContentLoader={
   async loadAll({corePath,dlcRoot,enabled,coreVersion}){
     const coreBase=await fetchJSON(corePath);
 
+    // Apply core override (Content Studio)
     const override = Storage.getContentOverride();
     const core = applyOverride(coreBase, override);
 
+    // File-based DLCs
     const dlcIndex=core.dlcIndex||[];
     const dlcs=[];
     for(const entry of dlcIndex){
@@ -22,18 +24,27 @@ export const ContentLoader={
       if(m) dlcs.push({...m,__folder:entry,__manifestPath:p});
     }
 
+    // Local DLCs (created in Admin)
     const localDlcs = (Storage.getLocalDlcs()||[]).map(d=>({ ...d, __local:true }));
     for(const d of localDlcs) dlcs.push(d);
 
     const enabledSet=new Set(enabled||[]);
     const activeDlcs=dlcs.filter(d=>enabledSet.has(d.id) && isCompatible(d, coreVersion));
 
+    // Modules = core + active DLC modules
     const modules=[...(core.modules||[])];
     for(const d of activeDlcs) for(const m of (d.modules||[])) modules.push({...m,__dlc:d.id});
+
     modules.sort((a,b)=>(a.order??999)-(b.order??999));
 
     return { 
-      meta:{coreId:core.id,coreName:core.name,coreVersion,contentVersion:core.contentVersion,activeDlcs:activeDlcs.map(d=>({id:d.id,name:d.name,version:d.version,local:!!d.__local}))}, 
+      meta:{
+        coreId:core.id,
+        coreName:core.name,
+        coreVersion,
+        contentVersion:core.contentVersion,
+        activeDlcs:activeDlcs.map(d=>({id:d.id,name:d.name,version:d.version,local:!!d.__local}))
+      }, 
       modules, 
       tutorials:core.tutorials||{}, 
       dlcs 
@@ -45,6 +56,7 @@ function applyOverride(core, override){
   if(!override) return core;
   const out = structuredClone(core);
 
+  // override modules by id, add new
   if(override.modules){
     const map = new Map((out.modules||[]).map(m=>[m.id,m]));
     for(const om of override.modules){
